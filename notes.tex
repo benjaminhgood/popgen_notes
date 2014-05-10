@@ -1,0 +1,325 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage[margin=1.25in]{geometry}
+
+\newcommand{\eq}[1]{Eq.~(\ref{#1})}
+\newcommand{\Eq}[1]{Equation~(\ref{#1})}
+\begin{document}
+
+\title{A crash course in population genetics}
+\author{Benjamin Good}
+
+\maketitle
+
+% wright-fisher model is infinite expansion bottlenecking!
+
+\section{Introduction}
+
+In the future, there will be an introduction here (i.e., what we're doing, what knowledge is assumed, what we hope to get out of theoretical models). But for now, nothing. 
+
+\section{Single-locus dynamics} 
+
+\noindent Let $f$ be the fraction of individuals in the population with a particular genotype. This is variously referred to as the gene/genotype/allele frequency. We start by considering the simplest possible model for the time evolution of $f$, where we compete the genotype of interest against a uniform reference genotype and neglect the effects of future mutations. In the population genetics literature, this is known as a \emph{single-locus} model, since it also approximates the evolution of a binary genome of length $L=1$. Departing from the standard convention, we will define our simplest model as a stochastic differential equation, 
+\begin{align}
+\label{eq:single-locus-langevin}
+\frac{\partial f}{\partial t} = \underbrace{s f(1-f)}_\text{selection} + \underbrace{\sqrt{\frac{f(1-f)}{N}} \eta(t)}_\text{genetic drift} \, ,
+\end{align}
+where $\eta(t)$ is a Brownian noise term with lowest order moments $\langle \eta(t) \rangle = 0$ and $\langle \eta(t) \eta(t') \rangle = \delta(t-t')$. In the physics literature, this is known as a \emph{Langevin equation}. The interpretation of these Langevin dynamics is that in some infinitesimal time $dt$,
+\begin{align}
+\label{eq:ito-interpretation}
+f(t+dt) = f(t) + dt \left[ s f(t)(1-f(t)) \right] + \sqrt{dt} \sqrt{\frac{f(t)(1-f(t))}{N}} \eta(t) \, .
+\end{align} 
+where $\eta(t)$ is a Gaussian random variable that is independent of $f(t)$\footnote{In physics/math language, \eq{eq:ito-interpretation} is known as the Ito interpretation of the stochastic ODE, as opposed to the alternative Stratanovich interpretation.}.
+
+\paragraph{Problem 1.} Derive equations of motion for the first two moments of $f(t)$. This is an example of ``moment hell.'' What condition needs to be satisfied in order for the moment hierarchy to close? What are the time-dependent solutions?
+
+\paragraph{Solution.}
+\begin{subequations}
+\begin{align}
+\frac{\partial \langle f \rangle}{\partial t} & = s \langle f \rangle - s \langle f^2 \rangle \\
+\frac{\partial \langle f^2 \rangle}{\partial t} & = 2 s \langle f^2 \rangle - s \langle f^3 \rangle + \frac{\langle f \rangle-\langle f^2 \rangle}{N} 
+\end{align}
+\end{subequations} 
+These equations are solvable when $s=0$. The solutions are
+\begin{subequations}
+\begin{align}
+\langle f \rangle = p \\
+\langle f^2 \rangle = p \left[ 1 - e^{-t/N} \right]
+\end{align}
+\end{subequations}
+
+\paragraph{Problem 2.} Let $\phi(f,t)$ denote the probability distribution of $f$ at time $t$. Derive the Fokker-Planck equation (i.e., the forward Kolmogorov equation) governing the evolution of $\phi$. 
+
+\paragraph{Solution.} 
+\begin{align}
+\frac{\partial \phi}{\partial t} = - \frac{\partial}{\partial f} \left[ s f(1-f) \phi \right] + \frac{1}{2N} \frac{\partial^2}{\partial f^2} \left[ f(1-f) \phi \right]
+\end{align}
+
+\paragraph{Problem 3.} Derive the partial differential equation governing the evolution of the moment generating function $H(z,t) = \langle e^{-zf(t)} \rangle$. First, convince yourself that this is given by the Laplace transform of the equation for $\phi(f,t)$. Next, see if you can derive this directly from the Langevin dynamics in \eq{eq:single-locus-langevin}. 
+
+\paragraph{Solution}
+\begin{align}
+\frac{\partial H}{\partial t} = - \left[ - s z + \frac{z^2}{2N} \right] \left[ \frac{\partial H}{\partial z} + \frac{\partial^2 H}{\partial z^2} \right] 
+\end{align}
+
+\noindent \Eq{eq:single-locus-langevin} is difficult to solve in closed form. This is difficulty is is primarily due to the fact that \eq{eq:single-locus-langevin} contains both a stochastic component ($\eta$) and a nonlinear component ($f(1-f)$). Note that since the expectation of $\eta$ vanishes, the $f(1-f)$ factor in the drift term is only ``pseudo-nonlinear,'' in that it only influences moments of similar order. As we saw in Problem 1, the nonlinear selection term is far more problematic, since it leads to a moment hierarchy that does not close.
+
+Fortunately, it is often the case in nature that population sizes are very large and selection differences are very small. It is therefore likely that the product $Ns$ is either very large or very small, unless there is some additional constraint that we have not accounted for. Thus, rather than trying to obtain a complete solution for arbitrary $Ns$, we will be satisfied with \emph{asymptotic} solutions in the $Ns \to 0$ and $Ns \to \infty$ limits. In the $Ns \to 0$ limit, we can neglect the selection term entirely, which leads to the well-known \emph{neutral theory} of population genetics. We'll ignore this case for now, but we'll come back to it in a later section.
+
+In the $Ns \to \infty$ limit, it is tempting to drop the genetic drift term completely (i.e., make a \emph{deterministic approximation}), but this is not always valid. In particular, we see that the drift term is only neglgible compared to the selection term when $Ns f(1-f) \gg 1$, so the deterministic approximation breaks down when $f$ approaches $0$ or $1$. Fortunately, the nonlinear terms become negligible in this limit, and we can decompose the dynamics of $f$ into the piecewise form
+\begin{align}
+\frac{\partial f}{\partial t} & = \begin{cases}
+s(1-f) f + \sqrt{\frac{1-f}{N}} \eta & \text{if $1-f \ll 1$,} \\
+s f(1-f) & \text{if $Ns f(1-f) \gg 1$} \\
+s f + \sqrt{\frac{f}{N}} \eta & \text{if $f \ll 1$}
+\end{cases}
+\end{align}
+
+\paragraph{Problem 4.} Solve the initial value problem $\partial_t f = sf(1-f)$ with $f(0) = p$. 
+
+\paragraph{Solution.}
+\begin{align}
+f(t) = \frac{p e^{st}}{1+p \left( e^{st}-1 \right)} 
+\end{align}
+
+\paragraph{Problem 5.} Solve the initial value problem $\partial_t f = s f + \sqrt{f/N} \eta$ with $f(0) = p$. Since $f$ is a random variable, you'll need to solve for the generating function $H(z,t) = \langle e^{-z f(t) } \rangle$, which will require you to use the \emph{method of characteristics} (see Appendix for a short primer).
+
+\paragraph{Solution.} 
+\begin{align}
+H(z,t) = \exp \left[ - \frac{p z e^{st}}{1+\frac{z}{2Ns} \left( e^{st} - 1 \right)} \right]
+\end{align}
+
+\paragraph{Problem 6.} In the initial value problem above, what is the probability that $f$ eventually goes extinct, i.e., what is the probability that $f=0$ when $t \to \infty$. What about the initial value problem before it?
+
+\paragraph{Solution.}
+In the IVP from problem 6, we have
+\begin{align}
+p_\mathrm{ext} = \begin{cases}
+e^{-2Nsp} & \text{if $s > 0$.} \\
+1 & \text{if $s < 0$.}
+\end{cases}
+\end{align}
+In the IVP from problem 5, we have
+\begin{align}
+p_\mathrm{ext} = \begin{cases}
+0 & \text{if $s > 0$.} \\
+1 & \text{if $s < 0$.}
+\end{cases}
+\end{align}
+
+\paragraph{Asymptotic matching.}  Now that we have solutions for the deterministic and linear regimes of \eq{eq:single-locus-langevin}, we can think about how to patch the two regimes together. This is necessary if we want to ask how a new mutatation (which starts out at frequency $p=1/N$) rises to detectable frequencies in the population. Now is the point where the $Ns \gg 1$ assumption comes in. Let's define a frequency scale $f^* = 1/\sqrt{Ns}$. By construction, we have $Ns f(1-f) \sim \sqrt{Ns} \gg 1$, so the genetic drift term is negligible. At the same time, $f^* \ll 1$, so the nonlienar terms are negligible as well. Thus, when $f \sim f^*$, we have an \emph{overlap} regime where both the deterministic and linear approximations are valid and
+\begin{align}
+\frac{\partial f}{\partial t} = s f \, \quad \to \quad f(t) = f(t_0) e^{s(t-t_0)}  \, , \quad p_\mathrm{ext} = \begin{cases}
+0 & \text{if $s > 0$} \\
+1 & \text{if $s < 0$}
+\end{cases}
+\end{align}
+To this end, let's define a new random variable $\nu$, such that $f(t) = \frac{\nu(t)}{Ns} e^{st}$. Due to the overlap argument above, we expect that at long times, the distribution of $\nu(t)$ becomes independent of time, $\nu(t) \to \nu$. We can see this explicitly by substituting into the generating function for $f(t)$:
+\begin{align}
+H_{\nu}(z,t) = \left\langle e^{-z \nu(t)} \right\rangle = \left\langle e^{-z Ns e^{-st} f(t)} \right\rangle = H_f(zNse^{-st},t) 
+\end{align}
+
+\paragraph{Problem 7.} Suppose that $s > 0$ and $p=1/N$. Calculate the generating function for $\nu$ (i.e., $\nu(\infty)$). What is the average value $\langle \nu \rangle$?
+
+\paragraph{Solution.} \ldots
+
+\paragraph{Problem 8.} Calculate the distribution of $\nu$, conditioned on $\nu > 0$. What is the average value $\langle \nu | \nu > 0 \rangle$?
+
+\paragraph{Solution.} \ldots
+
+\noindent Thus, we see that the frequency of a successful beneficial mutation (at ``long'' times) is given by
+\begin{align}
+f(t) = \frac{\frac{\nu}{Ns} e^{st}}{1+\frac{\nu}{Ns} e^{st}}
+\end{align}
+where $\nu$ captures all of the stochastic dependence from the linear regime. 
+
+\paragraph{Problem 9.} Calculate the expected time for a successful beneficial mutation to rise to frequency $f=0.5$. For comparison, what would the answer be if we had neglected genetic drift from the begining? This shows for a new beneficial mutation, the $Ns \to \infty$ limit is \emph{singular}, i.e., the behavior for large but finite $Ns$ is not simply a small correction to the $Ns = \infty$ solution.  
+
+\paragraph{Solution.} \ldots
+
+\paragraph{Mutations.} If we allow for mutations from mutant to wildtype (ignoring back-mutations for now), this adds an additional term $\mu(1-f)$ to the dynamics of $f$. In most biologically relevant scenarios, $\mu \ll s$, so we can again separate the dynamics of $f$ into three regimes:
+\begin{align}
+\frac{\partial f}{\partial t} & = s f(1-f) + \mu(1-f) + \sqrt{\frac{f(1-f)}{N}} \eta \\
+	& = \begin{cases} 
+	s(1-f)+\sqrt{\frac{(1-f)}{N}} \eta(t) & \text{if $1-f \ll 1$} \\
+	sf(1-f) & \text{if $Ns f(1-f) \gg 1$} \\
+	sf+\mu+\sqrt{\frac{f}{N}} \eta(t) & \text{if $f \ll 1$}
+	\end{cases}
+\end{align}
+Thus, we see that the only real difference is in the linear regime when $f$ is rare. 
+
+\paragraph{Problem 10.} Solve the initial value problem $\partial_t f = s f + \mu + \sqrt{f/N} \eta$ subject to the initial condition $f(0)=0$. 
+
+\paragraph{Solution.} \ldots
+
+\paragraph{Problem 11.} In the initial value problem above, calculate the long-time behavior of $f$. Again, it will be useful to focus on the distribution of $\nu$ defined by $f = \frac{\nu}{Ns} e^{st}$. Calculate the expected time for this beneficial mutation to reach frequency $f=0.5$. For comparison, what the answer be if we had neglected genetic drift from the begining? 
+
+\paragraph{Solution.} \ldots
+
+\paragraph{Problem 12.} Calculate the long-time behavior of $f$ when $s < 0$. This is known as \emph{mutation-selection balance}. For comparison, what the answer be if we had neglected genetic drift from the begining (i.e., \emph{deterministic} mutation-selection balance)? Is there a limit in which deterministic selection balance is exact?  
+
+\paragraph{Solution.} \ldots
+
+\subsection*{Bonus problems}
+
+In a first pass, it is perfectly fine to skip ahead to the section on multi-locus dynamics. 
+
+\paragraph{Bubble size.} Consider the ``bubble size'' defined by $W(t) = \frac{1}{N} \int_0^t f(t) dt$, where we have inserted the $N^{-1}$ factor in order to ensure that $W(t)$ is unitless. Unlike the other quantities we have considered so far, $W(t)$ is not a Markov random variable, so it is difficult to write down a simple stochastic differential equation for $W(t)$. However, $f(t)$ and $W(t)$ are \emph{jointly} Markov, so we can obtain the dynamics of $W(t)$ by considering the joint generating function
+\begin{align}
+H(z,\xi,t) \equiv \left\langle e^{-z W(t) - \xi f(t)} \right\rangle
+\end{align}
+evaluated at $xi=0$. We can again solve this equation using the method of characteristics. In backwards time, the characteristic for $\xi$ satisfies
+\begin{align}
+\frac{\partial \xi}{\partial \sigma} & = s \xi - \frac{\xi^2}{2N} + \frac{z}{N} \\
+\end{align} 
+so that 
+\begin{align}
+\xi(\sigma) = solution
+\end{align}
+and
+\begin{align}
+H(z,t) = H(z,\xi=0,t) = e^{-\xi(t) p} 
+\end{align}
+
+
+\paragraph{Problem.} Write down and solve the equations of motion for $H(x,\xi,t)$, subject to the initial condition $W(0)=0$ and $f(0)=N^{-1}$. 
+
+\paragraph{Solution.} To obtain the equations of motion for $W(t)$, we note that there is only a linear contribution from the $W(t)$ term, since the $\sqrt{\delta t}$ integrates out. This yields
+\begin{align}
+\frac{\partial H}{\partial t} = - \left[ - s \xi + \frac{\xi^2}{2N} - z \right] \frac{\partial H}{\partial \xi}  
+\end{align}   
+
+\section{Multi-locus dynamics (asexual)}
+
+The preceding single-locus model is valuable because it admits many exact analytical solutions (or at the very least, controlled approximations to the exact solutions). But in reality, genomes always contain more than one site, so at some point we will have to work with a \emph{multi}-locus evolutionary model with more than 2 states (if for no other reason than to examine when the single-locus model provides a good approximation). In principle, it is not hard to derive a generalization of the single-locus dynamics in \eq{eq:single-locus-langevin}. For the moment, we will restrict our attention to asexual organisms so that we can neglect the effects of recombination (we will revisit this case in a later section). Let $G = \{ \vec{g} \}$ denote the set of all possibile genotypes, and let $f(\vec{g})$ denote the frequency of genotype $\vec{g}$. It is straightforward to show that the genotype frequencies evolve according to the Langevin dynamics
+\begin{align}
+\label{eq:multi-locus-langevin}
+\begin{aligned}
+\frac{\partial f(\vec{g})}{\partial t} & = \left[ X(\vec{g}) - \overline{X}(t) \right] f(\vec{g}) + \sum_{\vec{g}'} \mu_{\vec{g}' \to \vec{g}} f(\vec{g}') - \mu_{\vec{g} \to \vec{g}'} f(\vec{g}) \\
+	& \quad + \sum_{\vec{g}'} \left[ \delta_{\vec{g},\vec{g}'} - f(\vec{g}) \right] \sqrt{\frac{f(\vec{g}')}{N}} \eta(\vec{g}') 
+\end{aligned}
+\end{align}
+where $X(\vec{g})$ is the fitness of genotype $g$, $\overline{X}(t) = \sum_{\vec{g}} X(\vec{g}) f(\vec{g})$ is the mean fitness of the population, and $\mu_{\vec{g} \to \vec{g}'}$ is the mutation rate between genotype $\vec{g}$ and $\vec{g}'$. The easiest way to show this is by considering stochastic model in which
+\begin{align}
+f(\vec{g},t+dt) \propto f(\vec{g}) + dt \left[ X(\vec{g}) + \sum_{\vec{g}'} \mu_{\vec{g}' \to \vec{g}} f(\vec{g}') - \mu_{\vec{g} \to \vec{g}'} f(\vec{g}) \right] + \sqrt{\frac{f(\vec{g}) dt}{N}} \eta(\vec{g}) 
+\end{align}
+where the constant of proportionality is set by the normalization condition $\sum_{\vec{g}} f(\vec{g},t+dt) = 1$. In principle, one can analyze \eq{eq:multi-locus-langevin} in much the same way that we analyzed \eq{eq:single-locus-langevin} above. In practice, however, this is difficult to make any progress without making further simplifying assumptions about the genotype to fitness map $X(\vec{g})$ and the structure of the genotype mutation network $\mu_{\vec{g} \to \vec{g}'}$. Both of these quantities are in principle quite complicated, and whole subfields of biology are devoted to measuring them empirically. Here, we'll focus on one of the simplest possible ``null models,'' which is designed to mimic a long sequence of nucleic acids. Suppose that the genome consists of $L$ sites, each of which can be in one of two states (traditionally denoted by $0$ and $1$ for the wildtype and mutant alleles, respectively). Then each genotype can be represented by an $L$-dimensional vector
+\begin{align}
+\vec{g} = \underbrace{(0,1,1,0,\ldots,0,1) }_{L} 
+\end{align}
+we assume that mutations happen at each site independently, so that $\mu_{\vec{g} \to \vec{g}'} > 0$ only if $\vec{g}$ and $\vec{g}'$ differ by a single ``bit-flip.'' We assume that the fitness contribution for each site is additive additive, so that 
+\begin{align}
+X(\vec{g}) = \sum_{i=1}^{L} s_i g_i \, , 
+\end{align}
+for some collection of \emph{fitness effects} $\{ s_i \}$. On the surface, these assumptions do not appear to produce any major simplifications in \eq{eq:multi-locus-langevin}, and the general version of this model becomes increasingly intractable as $L$ increases. The central problem is that the number of possible genotypes is often incredibly large, so that only a finite number of genotypes will be occupied in any finite population. This leads to a type of replica symmetry breaking, where the genotype frequencies in any particular population deviate dramatically from the ensemble average.  
+
+Fortunately, while the general form of this model is intractable for finite $L$, it turns out that we can make significant progress by focusing on the \emph{infinite sites limit} where  $L \to \infty$ and $\mu \to 0$. In this model, two genotypes with the same fitness are completely equivalent, both in terms of their present reproductive capacity and their potential for future mutations. Thus, we can coarse-grain over the underlying genotypes and work directly with the \emph{fitness classes}, $f(X) = \sum_{\vec{g} : X(\vec{g}) = X} f(\vec{g})$. The underlying mutation network can be coarse-grained to a \emph{distribution of fitness effects}, $U \rho(s) = \frac{1}{|G|} \sum_{\vec{g},\vec{g}': X(\vec{g}') = X(\vec{g})+s} \mu_{\vec{g} \to \vec{g}'}$, and the coarse-grained Langevin dynamics are given by  
+\begin{align}
+\label{eq:fitness-class-langevin}
+\begin{aligned}
+\frac{\partial f(X)}{\partial t} & = \left[ X-\overline{X}(t) \right] f(X) + U \int \rho(s) \left[ f(X-s) - f(X) \right] \, ds \\
+	& \quad + \sum_{X'} \left[ \delta_{XX'} - f(X) \right] \sqrt{\frac{f(X')}{N}} \eta(X')   
+\end{aligned}
+\end{align}
+The advantage of this ``mesoscopic'' level of description is that the fitness distribution can be highly predictable even when the underyling genotypes are highly stochastic (i.e., the replica symmetry breaking is less severe). 
+
+\subsection*{Deterministic mutation-selection balance}
+
+Motivated by the deterministic mutation-selection balance in the single-locus case, we can try to seek a solution of \eq{eq:fitness-class-langevin} in the infinite population limit where the effects of genetic drift can be neglected, and 
+\begin{align}
+\label{eq:deterministic-fitness-distribution}
+\frac{\partial f(X)}{\partial t} & = \left[ X-\overline{X}(t) \right] f(X) + U \int \rho(s) \left[ f(X-s) - f(X) \right] \, ds 
+\end{align}
+At first glance, the nonlinearity in the selection term appears problematic, but this nonlinearity can be eliminated by first solving for the unconstrained frequencies
+\begin{align}
+\label{eq:deterministic-fitness-distribution}
+\frac{\partial g(X)}{\partial t} & = X g(X) + U \int \rho(s) \left[ g(X-s) - g(X) \right] \, ds 
+\end{align}
+and then normalizing, $f(X) = g(X) / \sum_X g(X)$. 
+
+\paragraph{Problem} Verify that $f(X) = g(X) / \sum_X g(X)$ satisfies \eq{eq:deterministic-fitness-distribution}. 
+
+\paragraph{Problem} Solve the initial value problem in \eq{eq:f-equation} subject to the initial condition $f(X,0) = \delta(X)$. The easiest way to do this is to solve for the Laplace transform $\tilde{f}(z,t) = \int f(X,t) e^{-z X} \, dX$. 
+
+\paragraph{Solution}
+
+\paragraph{Problem} From the solution of the IVP above, derive an expression for the mean and variance of the fitness distribution, defined by
+\begin{align}
+\overline{X}(t) & = \int X f(X,t) \, dX \\
+\sigma^2(t) & = \int \left[ X-\overline{X}(t) \right]^2  f(X,t) \, dX
+\end{align}
+
+\paragraph{Solution}
+
+Mention singularity of the beneficial case. Non-singularity of the deleterious case. 
+
+\paragraph{Problem} Consider the case where all mutations have the same deleterious fitness cost $s$, so that $\rho(x) = \delta(x+s)$. Invert $\tilde{f}(z,t)$ to obtain $f(X,t)$. The easiest way to do this is to change variables from fitness ($X$) to the number of deleterious mutations ($k = -X/s$). What is the long time limit? This is the classic deleterious mutation-selection balance first derived by Haigh (1978). What are the equilibrium values of $\overline{X}$ and $\sigma^2$? What is the relaxation time to this equilibrium solution? 
+
+\paragraph{Solution} 
+The time-dependent solution is
+\begin{align}
+f(k,t) = \frac{\left[ \frac{U}{s} \left( 1 - e^{-st} \right) \right]^k}{k!} \exp \left[ - \frac{U}{s} \left( 1 - e^{-st} \right) \right] \, ,
+\end{align}
+which approaches the equilibrium distribution,
+\begin{align}
+f(k) = \frac{\left(\frac{U}{s}\right)^k}{k!} e^{-U/s} \, ,
+\end{align}
+on the timescale $t_{eq} \sim 1/s$. The mean and variance of the equilibrium distribution are given by
+\begin{align}
+\overline{X} & = - U \\
+\sigma^2 & = U s 
+\end{align}
+
+\paragraph{The mean-field approximation} 
+
+\begin{align}
+\frac{\partial f_0(X)}{\partial t} & = \left[ X-\overline{X}(0)-vt \right] f_0(X) + U \int ds \, \rho(s) \left[ f_0(X-s) - f_0(X) \right] \\
+\frac{\partial f_1(X)}{\partial t} & = \left[ X - \overline{X}(0) - vt \right] f_1(X) + U \int ds \, \rho(s) \left[ f_1(X-s) - f_1(X) \right] + \sqrt{\frac{f_1(X)}{N}} \eta(X)  
+\end{align}
+
+\paragraph{Problem} Derive the equation of motion for the generating functional of $f_1(X)$, defined by
+\begin{align}
+H[\phi(x),t] = \left\langle e^{-\int \phi(x) f(x+\overline{X}(0)+vt) \, dx } \right\rangle
+\end{align}
+Note that we have chosen to index the transform variable $\phi(x)$ by the \emph{relative} fitness, $x = X-\overline{X}(t)$. 
+
+\paragraph{Problem} Derive an equation for the long-time non-extinction probability of $f_1(X,t)$, subject to the initial condition $f_1(X,0) = \frac{1}{N} \delta(X-\overline{X}(0)-x)$. The easiest way to do this is to write out the formal method of characteristics solution for $H[\phi(x),t]$ and consider the possible values of $H[\phi(x),t]$ when $t \to \infty$. Remember that we are only interested in the leading order term in $1/N$.    
+
+\paragraph{Solution} The non-extinction probability $w(x)$ satisfies the ordinary differential equation 
+\begin{align}
+\label{eq:w-equation}
+v \partial_x w(x) = x w + U \int ds \, \rho(s) \left[ w(x+s) - w(x) \right] - \frac{w^2}{2} 
+\end{align}
+
+\paragraph{Problem} Solve for $w(x)$ in the limit that $U=0$ and $v=0$. How does this compare with the single-locus fixation probability derived above? 
+
+\paragraph{Solution} $w(x) = 2x$. 
+
+\paragraph{Problem} Solve for $w(x)$ in the limit that $U=0$ and $v>0$. The easiest way to do this is to transform \eq{eq:w-equation} to a linear form using the change of variables $u=1/w$. What is the limiting form of $w(x)$ when $x \to \infty$? What about $x \to -\infty$? What is wrong with this result?
+
+\paragraph{Solution}
+
+\section{Appendix: The method of characteristics (special case)}
+
+We will often need to solve partial differential initial value problems of the form
+\begin{align}
+\frac{\partial H}{\partial t} + f(t,z) \frac{\partial H}{\partial z} = g(t,z,H) \, , \quad H(z,0) = h(z) 
+\end{align}
+which can be solved using a simple version of the method of characteristics. The basic idea is this: if we look along curves that satisfy $\partial_t z = f(t,z)$, then the partial differential equation goes over to an ordinary differential equation,
+\begin{align}
+\frac{d H}{dt} = g(t,z(t),H) \, ,
+\end{align} 
+which is often much easier to solve. The only slight difficulty is that the initial condition for $z(t)$ is at the final time-point (i.e., the one you want to evaluate $H(z,t)$ at), while the initial condition for $H(t)$ is at the initial timepoint. Still, this is not too hard to deal with as long as we choose the proper notation. 
+
+To that end, let's let $t_f$ and $z_f$ denote the point at which we want to measure $H$ at the end of the day. Then let's transform the time variable to reverse time, $\sigma = t_f - t$. This changes the initial PDE to
+\begin{align}
+\frac{\partial H}{\partial \sigma} - f(t_f-\sigma,z) \frac{\partial H}{\partial z} = -g(t_f-\sigma,z,H) \, , \quad H(z,t_f) = h(z) 
+\end{align}
+and the corresponding ODEs are
+\begin{align}
+\frac{\partial z}{\partial \sigma} & = - f(t_f-\sigma,z) \, , & z(0) & = z_f \\
+\frac{\partial H}{\partial \sigma} & = - g(t_f-\sigma,z(\sigma),H) \, , & H(z(t_f),t_f) & = h(z(t_f)) 
+\end{align}
+which are naturally telescoped. The value $H(z_f,t_f)$ that we wish to find can then be obtained by evaluating $H$ at $\sigma=0$. 
+
+\end{document}
