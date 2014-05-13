@@ -114,22 +114,30 @@ p_\mathrm{ext} = \begin{cases}
 1 & \text{if $s < 0$}
 \end{cases}
 \end{align}
-To this end, let's define a new random variable $\nu$, such that $f(t) = \frac{\nu(t)}{Ns} e^{st}$. Due to the overlap argument above, we expect that at long times, the distribution of $\nu(t)$ becomes independent of time, $\nu(t) \to \nu$. We can see this explicitly by substituting into the generating function for $f(t)$:
+To this end, let's define a new random variable $\nu$, such that $f(t) = \frac{\nu(t)}{2Ns} e^{st}$. Due to the overlap argument above, we expect that at long times, the distribution of $\nu(t)$ becomes independent of time, $\nu(t) \to \nu$. We can see this explicitly by substituting into the generating function for $f(t)$:
 \begin{align}
-H_{\nu}(z,t) = \left\langle e^{-z \nu(t)} \right\rangle = \left\langle e^{-z Ns e^{-st} f(t)} \right\rangle = H_f(zNse^{-st},t) 
+H_{\nu}(z,t) = \left\langle e^{-z \nu(t)} \right\rangle = \left\langle e^{-2Ns e^{-st} z f(t)} \right\rangle = H_f(Nse^{-st}z,t) 
 \end{align}
 
 \paragraph{Problem 7.} Suppose that $s > 0$ and $p=1/N$. Calculate the generating function for $\nu$ (i.e., $\nu(\infty)$). What is the average value $\langle \nu \rangle$?
 
-\paragraph{Solution.} \ldots
+\paragraph{Solution.}  
+\begin{align}
+H_\nu(z) = \lim_{t \to \infty} H(2 Ns e^{-st} z ,t) = 1 - \frac{2s z}{1+z}  
+\end{align}
 
 \paragraph{Problem 8.} Calculate the distribution of $\nu$, conditioned on $\nu > 0$. What is the average value $\langle \nu | \nu > 0 \rangle$?
 
-\paragraph{Solution.} \ldots
+\paragraph{Solution.}
 
-\noindent Thus, we see that the frequency of a successful beneficial mutation (at ``long'' times) is given by
 \begin{align}
-f(t) = \frac{\frac{\nu}{Ns} e^{st}}{1+\frac{\nu}{Ns} e^{st}}
+H_{\nu}(z|\nu>0) = \left( 1 + z \right)^{-1}
+\end{align}
+which is an exponential distribution with mean $\langle \nu | \nu > 0 \rangle = 1$. 
+
+\noindent \newline Thus, we see that the frequency of a successful beneficial mutation (at ``long'' times) is given by
+\begin{align}
+f(t) = \frac{\frac{\nu}{2Ns} e^{st}}{1+\frac{\nu}{2Ns} e^{st}}
 \end{align}
 where $\nu$ captures all of the stochastic dependence from the linear regime. 
 
@@ -150,15 +158,24 @@ Thus, we see that the only real difference is in the linear regime when $f$ is r
 
 \paragraph{Problem 10.} Solve the initial value problem $\partial_t f = s f + \mu + \sqrt{f/N} \eta$ subject to the initial condition $f(0)=0$. 
 
-\paragraph{Solution.} \ldots
+\paragraph{Solution.}
+\begin{align}
+H(z,t) = \left[ 1 + \frac{z}{2Ns} \left( e^{st} - 1 \right) \right]^{-2N\mu} 
+\end{align}
 
-\paragraph{Problem 11.} In the initial value problem above, calculate the long-time behavior of $f$. Again, it will be useful to focus on the distribution of $\nu$ defined by $f = \frac{\nu}{Ns} e^{st}$. Calculate the expected time for this beneficial mutation to reach frequency $f=0.5$. For comparison, what the answer be if we had neglected genetic drift from the begining? 
+\paragraph{Problem 11.} In the initial value problem above, calculate the long-time behavior of $f$ when $s>0$. Again, it will be useful to focus on the distribution of $\nu$ defined by $f = \frac{\nu}{2Ns} e^{st}$. Calculate the expected time for this beneficial mutation to reach frequency $f=0.5$. For comparison, what the answer be if we had neglected genetic drift from the begining? 
 
-\paragraph{Solution.} \ldots
+\paragraph{Solution.} The generating function for $\nu$ is 
+\begin{align}
+H_\nu(z) = \lim_{t \to \infty} H(2Ns e^{-st} z,t) = (1+z)^{-2N\mu} 
+\end{align}
 
 \paragraph{Problem 12.} Calculate the long-time behavior of $f$ when $s < 0$. This is known as \emph{mutation-selection balance}. For comparison, what the answer be if we had neglected genetic drift from the begining (i.e., \emph{deterministic} mutation-selection balance)? Is there a limit in which deterministic selection balance is exact?  
 
-\paragraph{Solution.} \ldots
+\paragraph{Solution.} When $s < 0$, the generating function for $f$ approaches
+\begin{align}
+H(z) = \left( 1 + \frac{z}{2N|s|} \right)^{-2N\mu}
+\end{align}
 
 \subsection*{Bonus problems}
 
