@@ -37,14 +37,14 @@ where $\eta(t)$ is a Gaussian random variable that is independent of $f(t)$\foot
 \begin{subequations}
 \begin{align}
 \frac{\partial \langle f \rangle}{\partial t} & = s \langle f \rangle - s \langle f^2 \rangle \\
-\frac{\partial \langle f^2 \rangle}{\partial t} & = 2 s \langle f^2 \rangle - s \langle f^3 \rangle + \frac{\langle f \rangle-\langle f^2 \rangle}{N} 
+\frac{\partial \langle f^2 \rangle}{\partial t} & = 2 s \langle f^2 \rangle - 2 s \langle f^3 \rangle + \frac{\langle f \rangle-\langle f^2 \rangle}{N} 
 \end{align}
 \end{subequations} 
 These equations are solvable when $s=0$. The solutions are
 \begin{subequations}
 \begin{align}
-\langle f \rangle = p \\
-\langle f^2 \rangle = p \left[ 1 - e^{-t/N} \right]
+\langle f \rangle & = p \\
+\langle f^2 \rangle & = p \left[ 1 - e^{-t/N} \right] + p^2 e^{-t/N} 
 \end{align}
 \end{subequations}
 
@@ -116,7 +116,7 @@ p_\mathrm{ext} = \begin{cases}
 \end{align}
 To this end, let's define a new random variable $\nu$, such that $f(t) = \frac{\nu(t)}{2Ns} e^{st}$. Due to the overlap argument above, we expect that at long times, the distribution of $\nu(t)$ becomes independent of time, $\nu(t) \to \nu$. We can see this explicitly by substituting into the generating function for $f(t)$:
 \begin{align}
-H_{\nu}(z,t) = \left\langle e^{-z \nu(t)} \right\rangle = \left\langle e^{-2Ns e^{-st} z f(t)} \right\rangle = H_f(Nse^{-st}z,t) 
+H_{\nu}(z,t) = \left\langle e^{-z \nu(t)} \right\rangle = \left\langle e^{-2Ns e^{-st} z f(t)} \right\rangle = H_f(2Nse^{-st}z,t) 
 \end{align}
 
 \paragraph{Problem 7.} Suppose that $s > 0$ and $p=1/N$. Calculate the generating function for $\nu$ (i.e., $\nu(\infty)$). What is the average value $\langle \nu \rangle$?
@@ -176,6 +176,7 @@ H_\nu(z) = \lim_{t \to \infty} H(2Ns e^{-st} z,t) = (1+z)^{-2N\mu}
 \begin{align}
 H(z) = \left( 1 + \frac{z}{2N|s|} \right)^{-2N\mu}
 \end{align}
+which is a standard Gamma distribution with shape parameter $2N\mu$. 
 
 \subsection*{Bonus problems}
 
