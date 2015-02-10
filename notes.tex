@@ -207,6 +207,76 @@ H(z,t) = H(z,\xi=0,t) = e^{-\xi(t) p}
 \frac{\partial H}{\partial t} = - \left[ - s \xi + \frac{\xi^2}{2N} - z \right] \frac{\partial H}{\partial \xi}  
 \end{align}   
 
+\section{Single-locus dynamics: the heuristic approach}
+
+In the previous section, we attacked the single-locus model using a rigorous\footnote{Here we use the term ``rigorous'' in a physics sense, meaning that our calculations follow from a series of essentially mechanical steps. We do not make any attempt at formal mathematical proofs, which require significantly more notational machinery without providing much additional insight into the biology.} approach based on asymptotic matching. Here, we will re-analyze the same problems using a heuristic approach. To the physicists and mathematicians who are more comfortable with the rigorous derivations, this heuristic analysis may seem a lot less rigorous, and perhaps somewhat redudant. However, this is not actually the case (and it make take several re-readings before this becomes apparent). When done correctly, the heuristic analysis can be viewed as a sort of ``code'' for the more rigorous calculation, which allows us to derive many of the same results up to $\mathcal{O}(1)$ factors. The payoff comes when we try to generalize our analysis to more complicated scenarios. In many cases, the heuristic analysis easily be extended even when the rigorous approach does not yield analytical results.       
+
+To illustrate the heuristic approach, we will consider the fate (i.e., fixation probability) of a new mutation as a function of $N$, $s$, and its initial frequency $f_0$. According to \eq{eq:single-locus-langevin} the change in $f$ due to selection in some infinitesimal time $\delta t$ is given by
+\begin{align}
+( \delta f )_\mathrm{sel} \sim s  f (1-f) \delta t 
+\end{align} 
+Thus, it takes roughly $T_\mathrm{sel} = 1/s$ generations for selection to change the frequency of the mutation (or more specifically, its distance from the boundaries at $f=0$ or $f=1$) by a factor of order one. Meanwhile, the change in $f$ due to genetic drift in some infinitesimal time $\delta t$ is given by
+\begin{align}
+( \delta f)_\mathrm{drift} \sim \mathcal{N}\left(0, \, \frac{f(1-f) \delta t}{N} \right) 
+\end{align} 
+where $\mathcal{N}(\mu,\sigma^2)$ denotes a normal random variable with mean $\mu$ and variance $\sigma^2$. Thus, it takes roughly $T_\mathrm{drift} = N f(1-f)$ generations to change the frequency of an allele by a factor of order one. We can then compare the two timescales by looking at the ratio 
+\begin{align}
+\frac{T_\mathrm{drift}}{T_\mathrm{sel}} = N s f(1-f)
+\end{align}
+When $Ns f (1-f) \gg 1$, the drift timescale is much longer than the selection timescale, and the selective force dominates. On the other hand, when $Ns f(1-f) \ll 1$, the effects of selection can be neglected. Thus, we find that there are two critical frequencies
+\begin{align}
+f_\mathrm{sel} = \frac{1}{Ns} \, , \quad \tilde{f}_\mathrm{sel} = 1 - \frac{1}{Ns}  
+\end{align}
+which delineate the boundaries of the effectively neutral and effectively deterministic regimes. When $f \ll f_\mathrm{sel}$ (or when $1-f \ll \tilde{f}_\mathrm{sel}$), the mutation behaves essentially neutrally, while for $f \gg f_\mathrm{sel}$ ($1-f \gg \tilde{f}_\mathrm{sel}$) the frequency evolves deterministically. Note that this is essentially the same argument that we used for the asymptotic matching in the previous section. The difference here is that we will pretend that the two regimes can be extended all the way to $f_\mathrm{sel}$ and $\tilde{f}_\mathrm{sel}$ (i.e., we simply patch them together, rather than asymptotically matching). This will introduce errors that enter as $\mathcal{O}(1)$ factors multiplying various formulae, but otherwise the results will follow exactly as before. 
+
+From this, we can explore several cases. If $Ns \ll 1$, then $f_\mathrm{sel} > 1$ and $\tilde{f}_\mathrm{sel} < 0$, and the neutral regime will apply for the entire range of frequencies. In this case, standard symmetry arguments show that the probability of reaching $f_f$ before hitting $0$ is given by
+\begin{align}
+p(f_0 \to f_f) = \frac{f_0}{f_f} 
+\end{align} 
+and the mutation will traverse this distance in a time of order $N (f_f-f_0)$. To find the fixation probability of a new mutation, we set $f_0 = \frac{1}{N}$ and $f_f = 1$, and we find that
+\begin{align}
+p_\mathrm{fix} = \frac{1}{N} \, , \quad T_\mathrm{fix} \sim N
+\end{align}
+
+On the other hand, if $Ns \gg 1$, then $f_\mathrm{sel} \ll 1$, and $1-\tilde{f} \ll 1$, and there will be a broad range of frequencies where selection is the dominant force. Note, however, that genetic drift can never be neglected entirely when considering the fate of a new mutation. Even in infinitely large populations, it is still the case that
+\begin{align}
+Ns \left( \frac{1}{N} \right) \left( 1 -  \frac{1}{N} \right)  = s \ll 1
+\end{align}
+so genetic drift always matters early in the life of the mutation. Fortunately, when the mutation is this rare, selection has a negligible effect, and the mutation behaves effectively neutrally. In this case, the mutation rises from $f_0 = \frac{1}{N}$ to $f_\mathrm{sel}$ with probability
+\begin{align}
+p\left( \frac{1}{N} \to f_\mathrm{sel} \right) = \frac{\frac{1}{N}}{f_\mathrm{sel}} \sim s 
+\end{align}
+and it takes roughly $1/s$ generations for this to happen. Once the mutation reaches frequency $f_\mathrm{sel}$, selection takes over. If $s < 0$, the mutation will never rise much above $f_\mathrm{sel}$, and will typically go extinct within $1/s$ generations. In other words,
+\begin{align}
+p_\mathrm{fix} \approx s \cdot 0 \approx 0 \, , \quad T_\mathrm{ext} \approx \frac{1}{s} 
+\end{align}
+On the other hand, if $s > 0$, then the mutation will start to grow deterministically as
+\begin{align}
+f(t) = \frac{f_\mathrm{sel} e^{st}}{1+f_\mathrm{sel} ( e^{st} - 1)} 
+\end{align} 
+and will hit $\tilde{f}_\mathrm{sel}$ after $\frac{2}{s} \log \left( Ns \right)$ generations. At this point, the wildtype allele is essentially deleterious, and will go extinct within $1/s$ generations. Thus, we have
+\begin{align}
+p_\mathrm{fix} \approx s \cdot 1 \approx 1 \, , \quad T_\mathrm{fix} \approx \frac{2}{s} \log(Ns) 
+\end{align}
+At this point, accounting for initial frequencies other than $f_0 = \frac{1}{N}$ is straightforward. If $f_0 \gg f_\mathrm{sel}$, then drift will never play an important role, and the mutation will simply fix or go extinct deterministically. On the other hand, if $f_0 \ll f_\mathrm{sel}$, then the mutation will reach frequency $f_\mathrm{sel}$ with probability
+\begin{align}
+p(f_0 \to f_\mathrm{sel}) \approx N f_0 s
+\end{align}
+and then fix or go extinct as before. Putting everything together, we find that
+\begin{align}
+p_\mathrm{fix}(s,N,f_0) \sim \begin{cases}
+1 & \text{if $Ns \gg 1$ and $f_0 \gg \frac{1}{Ns}$} \\
+N f_0 s & \text{if $Ns \gg 1$ and $f_0 \ll \frac{1}{Ns}$} \\
+\frac{f_0}{N} & \text{if $N|s| \ll 1$} \\
+0 & \text{if $s < 0$ and $N|s| \gg 1$ and $1-f_0 \gg \frac{1}{Ns}$} \\
+1 - N(1-f_0) |s| & \text{if $s < 0$ and $N|s| \gg 1$ and $1-f_0 \ll \frac{1}{Ns}$}
+\end{cases}
+\end{align}
+This can be compared to the exact formula
+\begin{align}
+p_\mathrm{fix}(s,N,f_0) = \frac{1-e^{-2Ns f_0}}{1-e^{-2Ns}}
+\end{align}
+
 \section{Multi-locus dynamics (asexual)}
 
 The preceding single-locus model is valuable because it admits many exact analytical solutions (or at the very least, controlled approximations to the exact solutions). But in reality, genomes always contain more than one site, so at some point we will have to work with a \emph{multi}-locus evolutionary model with more than 2 states (if for no other reason than to examine when the single-locus model provides a good approximation). In principle, it is not hard to derive a generalization of the single-locus dynamics in \eq{eq:single-locus-langevin}. For the moment, we will restrict our attention to asexual organisms so that we can neglect the effects of recombination (we will revisit this case in a later section). Let $G = \{ \vec{g} \}$ denote the set of all possibile genotypes, and let $f(\vec{g})$ denote the frequency of genotype $\vec{g}$. It is straightforward to show that the genotype frequencies evolve according to the Langevin dynamics
